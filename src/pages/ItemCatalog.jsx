@@ -9,14 +9,34 @@ const ItemCatalog = () => {
   const [category, setCategory] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!name.trim() || !category.trim()) {
+      setError('Name and Category are required.');
+      return;
+    }
+    
+    const parsedQty = parseInt(quantity);
+    const parsedPrice = parseFloat(price);
+    
+    if (isNaN(parsedQty) || parsedQty < 0) {
+      setError('System Quantity must be a valid number >= 0.');
+      return;
+    }
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      setError('Price must be a valid number >= 0.');
+      return;
+    }
+
+    setError('');
     addItem({
-      name,
-      category,
-      systemQuantity: parseInt(quantity),
-      price: parseFloat(price)
+      name: name.trim(),
+      category: category.trim(),
+      systemQuantity: parsedQty,
+      price: parsedPrice
     });
     setName('');
     setCategory('');
@@ -37,6 +57,7 @@ const ItemCatalog = () => {
       {showForm && (
         <div className="glass-panel" style={{ marginBottom: '32px' }}>
           <h3 style={{ marginBottom: '16px' }}>Add New Inventory Item</h3>
+          {error && <div style={{ color: 'var(--accent-red)', marginBottom: '16px', fontWeight: 'bold' }}>{error}</div>}
           <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div className="form-group">
               <label>Item Name</label>

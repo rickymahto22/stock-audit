@@ -11,21 +11,50 @@ const NewAudit = () => {
   const [auditItems, setAuditItems] = useState(
     items.map(item => ({
       ...item,
-      physicalQuantity: item.systemQuantity,
-      damaged: 0,
-      expired: 0
+      physicalQuantity: item.systemQuantity.toString(),
+      damaged: '0',
+      expired: '0'
     }))
   );
+  
+  const [error, setError] = useState('');
 
   const handleInputChange = (id, field, value) => {
     setAuditItems(prev => prev.map(item => 
-      item.id === id ? { ...item, [field]: parseInt(value) || 0 } : item
+      item.id === id ? { ...item, [field]: value } : item
     ));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addAudit({ items: auditItems });
+    
+    // Validation
+    const processedItems = [];
+    for (const item of auditItems) {
+      const pQty = parseInt(item.physicalQuantity);
+      const dam = parseInt(item.damaged);
+      const exp = parseInt(item.expired);
+      
+      if (isNaN(pQty) || pQty < 0 || isNaN(dam) || dam < 0 || isNaN(exp) || exp < 0) {
+        setError(`Please enter valid non-negative numbers for item: ${item.name}`);
+        return;
+      }
+      
+      if (dam + exp > pQty && pQty > 0) {
+        setError(`Damaged and expired units cannot exceed total physical quantity for item: ${item.name}`);
+        return;
+      }
+      
+      processedItems.push({
+        ...item,
+        physicalQuantity: pQty,
+        damaged: dam,
+        expired: exp
+      });
+    }
+
+    setError('');
+    addAudit({ items: processedItems });
     navigate('/');
   };
 
@@ -38,6 +67,7 @@ const NewAudit = () => {
       <h1 style={{ marginBottom: '32px' }}>Perform New Audit</h1>
       
       <div className="glass-panel">
+        {error && <div style={{ color: 'var(--accent-red)', marginBottom: '16px', fontWeight: 'bold' }}>{error}</div>}
         <form onSubmit={handleSubmit}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ minWidth: '800px', marginBottom: '24px' }}>

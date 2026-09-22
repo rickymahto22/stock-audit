@@ -27,22 +27,16 @@ export const AuditProvider = ({ children }) => {
       if (item.expired > 0) totalScore -= 2;
 
       // Auto-generate corrective actions
-      if (discrepancy < 0) {
+      if (Math.abs(discrepancy) > 0 || item.damaged > 0 || item.expired > 0) {
         actions.push({
           id: Date.now().toString() + Math.random().toString(),
           itemId: item.id,
           itemName: item.name,
-          issue: `Shortage of ${Math.abs(discrepancy)} units`,
-          status: 'Open',
-          date: new Date().toISOString()
-        });
-      }
-      if (item.damaged > 0) {
-        actions.push({
-          id: Date.now().toString() + Math.random().toString(),
-          itemId: item.id,
-          itemName: item.name,
-          issue: `${item.damaged} damaged units found`,
+          systemQuantity: item.systemQuantity,
+          physicalQuantity: item.physicalQuantity,
+          discrepancy: discrepancy,
+          damaged: item.damaged,
+          expired: item.expired,
           status: 'Open',
           date: new Date().toISOString()
         });

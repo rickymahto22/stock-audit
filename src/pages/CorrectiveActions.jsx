@@ -25,9 +25,13 @@ const CorrectiveActions = () => {
               <tr>
                 <th>Date</th>
                 <th>Item</th>
-                <th>Issue</th>
+                <th>Sys Qty</th>
+                <th>Phys Qty</th>
+                <th>Diff</th>
+                <th>Damaged</th>
+                <th>Expired</th>
                 <th>Status</th>
-                <th>Update Status</th>
+                <th>Update</th>
               </tr>
             </thead>
             <tbody>
@@ -35,7 +39,13 @@ const CorrectiveActions = () => {
                 <tr key={action.id}>
                   <td>{new Date(action.date).toLocaleDateString()}</td>
                   <td>{action.itemName}</td>
-                  <td>{action.issue}</td>
+                  <td>{action.systemQuantity}</td>
+                  <td>{action.physicalQuantity}</td>
+                  <td style={{ color: action.discrepancy < 0 ? 'var(--accent-red)' : action.discrepancy > 0 ? 'orange' : 'var(--text-primary)' }}>
+                    {action.discrepancy > 0 ? `+${action.discrepancy}` : action.discrepancy}
+                  </td>
+                  <td style={{ color: action.damaged > 0 ? 'var(--accent-red)' : 'var(--text-primary)' }}>{action.damaged}</td>
+                  <td style={{ color: action.expired > 0 ? 'orange' : 'var(--text-primary)' }}>{action.expired}</td>
                   <td style={{ color: getStatusColor(action.status), fontWeight: 'bold' }}>
                     {action.status}
                   </td>
